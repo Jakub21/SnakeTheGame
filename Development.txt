@@ -1,0 +1,17 @@
+Todo list
+	TODO: If player does not respond in time snake continues to move
+		in same direction
+	TODO: Add prize and score system.
+
+Ideas list
+	IDEA: Add difficulty levels. They could influence time-for-respond,
+		starting-length and starting-HP
+	IDEA: Add HP so player doesn't have to leave after 1 hit
+		Still its possible to set starting HP to 1 in higher difficulties
+	IDEA: Include big prizes that give more score.
+		They should expire after a short time.
+		They influence of tail length should differ from normal prize
+
+Additional Info
+	INFO: Regex "\r" represents newline.
+		Using "\n" caused CMD to print an empty line
