@@ -1,7 +1,6 @@
 Todo list
 	TODO: If player does not respond in time snake continues to move
 		in same direction
-	TODO: Add prize and score system.
 
 Ideas list
 	IDEA: Add difficulty levels. They could influence time-for-respond,
