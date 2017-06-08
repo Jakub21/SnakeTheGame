@@ -1,81 +1,144 @@
-#Snake
-#JakubP, June 2017
+#----#----#----#----#----#----
+#PROGRAM INFO
+#----#----#----#----#----#----
+#Name				#SnakeTheGame
+#Date of Creation	#June 2017
+#Creator Name		#JakubP
 
-#IMPORTS
+
+
+#----#----#----#----#----#----
+#IMPORT LIBRARIES
+#----#----#----#----#----#----
 from random import randint
 from msvcrt import getch
 from os import system
 
-#DEFINE FUNCTIONS
-def clear():
-	 system("cls")
-	 print("# ConsoleSnake # JakubP # 2017 #\n")
 
-def rand_prize(map0):
+
+#----#----#----#----#----#----
+#DEFINE REQUIRED FUNCTIONS
+#----#----#----#----#----#----
+
+#----#----#----
+#Clears screen
+def clear0():
+	 system("cls")
+	 print("# SnakeTheGame # JakubP # 2017 #")
+
+#----#----#----
+#Chooses location of new prize
+def rand_prize0(map0):
 	#Search for 0 cells in map0
 	#Save their IDs to empty_cells_list
-	incr2 = 20
+	incr2 = 0
 	empty_cells_list = [forbidden for q in range(map_size+5)]
 	for incr1 in range(map_size):
-		if map0[incr1] == 0:
+		if map0[incr1] == char_bcgr:
 			empty_cells_list[incr2] = incr1
 			incr2 += 1
-	#Return random cell from empty_cells_list
+	#Return random cell from empty_cells_list table
 	random_id = randint(0, map_size)
 	return empty_cells_list[random_id]
 
-#BASIC VARS
-#Map
-map_size = 144	#24**2 = 576
-width = 12		#24
-#Game runs out of declared memory after this amount of steps
-max_step = 1024*4
-#Ascii characters representing objects (Console only)
+#----#----#----
+#Shows map and notifications on screen
+def print_map0(map1, size, wdt, scr, illg):
+	#Clear screen and print Header
+	clear0()
+	#Print map itself
+	for incr1 in range(size):
+		if incr1 % wdt == 0:
+			print("\r")
+		print(chr( map1[incr1] ), end = " ")
+	#Print notifications
+	print("\nScore: ", scr)
+	if illg != 0:
+		print("You cannot move here!")
+
+#----#----#----
+#Adds walls on map's perimeter
+def add_perimeter0(map0, map_size):
+	for incr0 in range(map_size):
+		if incr0 < width:
+			map0[incr0] = char_wall
+		elif incr0 %width == 0:
+			map0[incr0] = char_wall
+		elif incr0 %width == width-1:
+			map0[incr0] = char_wall
+		elif incr0 > map_size -width:
+			map0[incr0] = char_wall
+	return map0
+
+#----#----#----
+#Removes StepSpecified data from map
+def remove_old_data0(map0, map_size):
+	for incr1 in range(map_size):
+		if map0[incr1] == char_head:
+			map0[incr1] = char_bcgr
+		elif map0[incr1] == char_tail:
+				map0[incr1] = char_bcgr
+	return map0
+
+
+
+#----#----#----#----#----#----
+#THE ACTUAL START OF PROGRAM
+#----#----#----#----#----#----
+
+
+#----#----#----#----#----#----
+#VARS DECLARATION
+#----#----#----
+#Objects' appearance in Console	(ASCII)
 char_bcgr = 0
 char_wall = 87
 char_tail = 83
 char_head = 72
 char_prize = 80
-#Just for system
+
+#----#----#----
+#Map system
+map_size = 144
+width = 12
 forbidden = map_size-1
-#Declaring those to avoid errors
-move = 100	#D
+map0 = [char_bcgr for q in range(map_size)]
+
+#----#----#----
+#Step system
+max_step = 1024*8
 notamove = 0
 step = 0
 illegal = 0
-#Prizes system
+head_pos = (map_size//2)-( (width//2) +1)
+position0 = head_pos
+location_history = [forbidden for q in range(max_step)]
+
+#----#----#----
+#Input system
+move = 100
+
+#----#----#----
+#Score system
 score = 0
 count_targets = 0
-#Difficulty
-extending_ratio = 2	#Add +1 lenght every $ score gained
-#Define map table
-map0 = [char_bcgr for q in range(map_size)]
 
-#CREATE WALLS ON MAP'S PERIMETER
-for incr0 in range(map_size):
-	if incr0 < width:
-		map0[incr0] = char_wall
-	elif incr0 %width == 0:
-		map0[incr0] = char_wall
-	elif incr0 %width == width-1:
-		map0[incr0] = char_wall
-	elif incr0 > map_size -width:
-		map0[incr0] = char_wall
-
-#SNAKE DATA
-lenght = 5
-#Set start position
-head_pos = map_size//2
-head_pos -= width//2
-head_pos -= 1
 #----#----#----
-position0 = head_pos
-#Define table for tail data
-location_history = [forbidden for q in range(max_step)]
+#Difficulties
+extension_rate = 2
+lenght = 2
+
+
+#----#----#----#----#----#----
+#INITIALIZATION
+#Add walls on map's perimeter
+map0 = add_perimeter0(map0, map_size)
+
 
 
 #----#----#----#----#----#----
 #MAIN GAME LOOP
+#----#----#----#----#----#----
 for incr0 in range(max_step):
 	#InitializeStep
 	if notamove == 0:
@@ -83,14 +146,7 @@ for incr0 in range(max_step):
 	notamove = 0
 	location_history[step] = head_pos
 
-	#Clear step-specified data
-	for incr1 in range(map_size):
-		if map0[incr1] == char_head:
-			map0[incr1] = char_bcgr
-		elif map0[incr1] == char_tail:
-				map0[incr1] = char_bcgr
-
-	#Fill map
+	#Add new step-specified data
 	for incr1 in range(step-lenght, step):
 		if location_history[incr1] != forbidden:
 			map0[ location_history[incr1] ] = char_tail
@@ -98,7 +154,7 @@ for incr0 in range(max_step):
 
 	#InitializePrizes
 	if count_targets == 0:
-		prize_location = rand_prize(map0)
+		prize_location = rand_prize0(map0)
 		if prize_location != forbidden:
 			map0[prize_location] = char_prize
 			count_targets += 1
@@ -106,38 +162,24 @@ for incr0 in range(max_step):
 		map0[prize_location] = char_prize
 
 	#Print map
-	clear()
-	for incr1 in range(map_size):
-		if incr1 % width == 0:
-			print("\r")
-		print(chr(map0[incr1]), end = " ")
-		#print(map0[incr1], end = "\t")
+	print_map0(map0, map_size, width, score, illegal)
 
-	#Notifications and others
-	print("\r")
-	print("Score: ", score)
-	#DEVELOPMENT
-	print("Lenght: ", lenght)
-	print("PrLoc:", prize_location, "(Row: ", prize_location//width, ")")
-	#----#----#---
-	if illegal != 0:
-		print("You cannot move here!")
+	#Remove old step-specified data from map
+	map0 = remove_old_data0(map0, map_size)
+	#Reset variables
 	illegal = 0
 
-	#Input
+	#Input key
 	move = ord(getch())
 
-	#Move head
-	#Set it to current position
-		#Original can be reverted in case of illegal move
+	#Check key
 	position0 = head_pos
-
-	#Vertical
+	#Vertical move
 	if move == 119:
 		head_pos -= width
 	elif move == 115:
 		head_pos += width
-	#Horisontal
+	#Horisontal move
 	elif move == 97:
 		head_pos -= 1
 	elif move == 100:
@@ -147,30 +189,30 @@ for incr0 in range(max_step):
 		break
 	elif move == 3:	#CtrlC
 		break
-	#Other key
+	#Keys that are not specified here
 	else:
 		notamove = 1
 
 	#Check if move is legal
-	#When player hits wall
+	#CASE: Player hits the wall
 	if map0[head_pos] == char_wall:
 		illegal = 1
-	#When player hits tail
+	#CASE: When player hits tail
 	elif map0[head_pos] == char_tail:
 		illegal = 1
-	#Prize is found
+	#CASE: Prize is found
 	elif map0[head_pos] == char_prize:
 		count_targets -= 1
 		score += 1
-		if score % extending_ratio == 0:
+		if score % extension_rate == 0:
 			lenght += 1
-	#Common
+	#Applied to every illegal move
 	if illegal == 1:
 		head_pos = position0
 		notamove = 1
 
-	#ENDOF Game Loop
+	#ENDOF GameLoop
 
-clear()
+clear0()
 print("Score: ", score)
 #ENDOF Program
