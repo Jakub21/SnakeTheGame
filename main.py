@@ -1,91 +1,13 @@
 #----#----#----#----#----#----
-#PROGRAM INFO
-#----#----#----#----#----#----
-#Name				#SnakeTheGame
-#Date of Creation	#June 2017
-#Creator Name		#JakubP
-
-
-
+#SnakeTheGame, JakubP
 #----#----#----#----#----#----
 #IMPORT LIBRARIES
-#----#----#----#----#----#----
-from random import randint
+#----#----#----
+#Public
 from msvcrt import getch
-from os import system
-
-
-
-#----#----#----#----#----#----
-#DEFINE REQUIRED FUNCTIONS
-#----#----#----#----#----#----
-
 #----#----#----
-#Clears screen
-def clear0():
-	 system("cls")
-	 print("# SnakeTheGame # JakubP # 2017 #")
-
-#----#----#----
-#Chooses location of new prize
-def rand_prize0(map0):
-	#Search for 0 cells in map0
-	#Save their IDs to empty_cells_list
-	incr2 = 0
-	empty_cells_list = [forbidden for q in range(map_size+5)]
-	for incr1 in range(map_size):
-		if map0[incr1] == char_bcgr:
-			empty_cells_list[incr2] = incr1
-			incr2 += 1
-	#Return random cell from empty_cells_list table
-	random_id = randint(0, map_size)
-	return empty_cells_list[random_id]
-
-#----#----#----
-#Shows map and notifications on screen
-def print_map0(map1, size, wdt, scr, illg):
-	#Clear screen and print Header
-	clear0()
-	#Print map itself
-	for incr1 in range(size):
-		if incr1 % wdt == 0:
-			print("\r")
-		print(chr( map1[incr1] ), end = " ")
-	#Print notifications
-	print("\nScore: ", scr)
-	if illg != 0:
-		print("You cannot move here!")
-
-#----#----#----
-#Adds walls on map's perimeter
-def add_perimeter0(map0, map_size):
-	for incr0 in range(map_size):
-		if incr0 < width:
-			map0[incr0] = char_wall
-		elif incr0 %width == 0:
-			map0[incr0] = char_wall
-		elif incr0 %width == width-1:
-			map0[incr0] = char_wall
-		elif incr0 > map_size -width:
-			map0[incr0] = char_wall
-	return map0
-
-#----#----#----
-#Removes StepSpecified data from map
-def remove_old_data0(map0, map_size):
-	for incr1 in range(map_size):
-		if map0[incr1] == char_head:
-			map0[incr1] = char_bcgr
-		elif map0[incr1] == char_tail:
-				map0[incr1] = char_bcgr
-	return map0
-
-
-
-#----#----#----#----#----#----
-#THE ACTUAL START OF PROGRAM
-#----#----#----#----#----#----
-
+#Local
+import stg_fnct_pack_00
 
 #----#----#----#----#----#----
 #VARS DECLARATION
@@ -131,14 +53,14 @@ lenght = 2
 
 #----#----#----#----#----#----
 #INITIALIZATION
+#----#----#----
 #Add walls on map's perimeter
-map0 = add_perimeter0(map0, map_size)
-
+map0 = stg_fnct_pack_00.add_perimeter0(map0, map_size, width, char_wall)
 
 
 #----#----#----#----#----#----
 #MAIN GAME LOOP
-#----#----#----#----#----#----
+#----#----#----
 for incr0 in range(max_step):
 	#InitializeStep
 	if notamove == 0:
@@ -154,7 +76,7 @@ for incr0 in range(max_step):
 
 	#InitializePrizes
 	if count_targets == 0:
-		prize_location = rand_prize0(map0)
+		prize_location = stg_fnct_pack_00.rand_prize0(map0, map_size, forbidden, char_bcgr)
 		if prize_location != forbidden:
 			map0[prize_location] = char_prize
 			count_targets += 1
@@ -162,10 +84,10 @@ for incr0 in range(max_step):
 		map0[prize_location] = char_prize
 
 	#Print map
-	print_map0(map0, map_size, width, score, illegal)
+	stg_fnct_pack_00.print_map0(map0, map_size, width, score, illegal)
 
 	#Remove old step-specified data from map
-	map0 = remove_old_data0(map0, map_size)
+	map0 = stg_fnct_pack_00.remove_old_data0(map0, map_size, char_head, char_tail, char_bcgr)
 	#Reset variables
 	illegal = 0
 
@@ -211,8 +133,15 @@ for incr0 in range(max_step):
 		head_pos = position0
 		notamove = 1
 
+	#----#----#----
 	#ENDOF GameLoop
 
-clear0()
+
+#----#----#----
+#Executed when leaving
+stg_fnct_pack_00.clear0()
 print("Score: ", score)
+
+
+#----#----#----
 #ENDOF Program

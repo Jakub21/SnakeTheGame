@@ -1,3 +1,6 @@
+Creation
+	Jakub P.
+	June 2017
 Todo list
 	TODO: Snake should continue to move in same direction
 		In case when player does not change it
