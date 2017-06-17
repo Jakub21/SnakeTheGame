@@ -1,147 +1,93 @@
-#----#----#----#----#----#----
-#SnakeTheGame, JakubP
-#----#----#----#----#----#----
-#IMPORT LIBRARIES
-#----#----#----
-#Public
-from msvcrt import getch
-#----#----#----
-#Local
-import stg_fnct_pack_00
+#SnakeProject2, June2017
+#main.py
 
-#----#----#----#----#----#----
-#VARS DECLARATION
-#----#----#----
-#Objects' appearance in Console	(ASCII)
-char_bcgr = 0
-char_wall = 87
-char_tail = 83
-char_head = 72
-char_prize = 80
+#PublicLibraries
+import msvcrt
+#Private
+import snakeclass
+import printerpack
 
-#----#----#----
-#Map system
-map_size = 144
-width = 12
-forbidden = map_size-1
-map0 = [char_bcgr for q in range(map_size)]
+def getkey():
+    return ord(msvcrt.getch())
 
-#----#----#----
-#Step system
-max_step = 1024*8
-notamove = 0
-step = 0
-illegal = 0
-head_pos = (map_size//2)-( (width//2) +1)
-position0 = head_pos
-location_history = [forbidden for q in range(max_step)]
-
-#----#----#----
-#Input system
-move = 100
-
-#----#----#----
-#Score system
-score = 0
-count_targets = 0
-
-#----#----#----
-#Difficulties
-extension_rate = 2
-lenght = 2
+def check_key(key,keyset):
+    isvalid = 0
+    if key == keyset["0key_move_north"]:
+        isvalid = 1
+    if key == keyset["0key_move_south"]:
+        isvalid = 1
+    if key == keyset["0key_move_west"]:
+        isvalid = 1
+    if key == keyset["0key_move_east"]:
+        isvalid = 1
+    return isvalid
 
 
-#----#----#----#----#----#----
-#INITIALIZATION
-#----#----#----
-#Add walls on map's perimeter
-map0 = stg_fnct_pack_00.add_perimeter0(map0, map_size, width, char_wall)
 
+def execute():
+    #Variables
+    mapheight = 12
+    mapwidth  = 24
+    mapsize = mapwidth * mapheight
+    count_moves = 0
 
-#----#----#----#----#----#----
-#MAIN GAME LOOP
-#----#----#----
-for incr0 in range(max_step):
-	#InitializeStep
-	if notamove == 0:
-		step += 1
-	notamove = 0
-	location_history[step] = head_pos
+    mapdims = (mapsize, mapwidth, mapheight)
+    #Keys used in game
+    keyset = {
+        "0key_move_north": ord("w"),
+        "0key_move_south": ord("s"),
+        "0key_move_west":  ord("a"),
+        "0key_move_east":  ord("d"),
+        "0key_exit_game":  ord("q"),
+    }
+    #Map charachers
+    mapchars = {
+        "0chr_bckg": " ",
+        "0chr_brdr": "#",
+        "0chr_head": "A",
+        "0chr_tail": "*",
+        #"":"",
+    }
+    #Localisation
+    textpack = {
+        #Ingame
+        "0text_title_0": " Snake by JakubP (2017)\n",
+        "0text_snake_x": "Snake X:\t",
+        "0text_snake_y": "Snake Y:\t",
+        "0text_snake_l": "Snake length:\t",
+        "0text_moves_c": "Num of moves:\t",
+        #"":"",
+        #Menu
+        #"":"",
+    }
 
-	#Add new step-specified data
-	for incr1 in range(step-lenght, step):
-		if location_history[incr1] != forbidden:
-			map0[ location_history[incr1] ] = char_tail
-	map0[head_pos] = char_head
+    #Starting Snake
+    start_pos = mapsize//2
+    start_len = 3
+    mysnake = snakeclass.Snake(start_pos, start_len)
 
-	#InitializePrizes
-	if count_targets == 0:
-		prize_location = stg_fnct_pack_00.rand_prize0(map0, map_size, forbidden, char_bcgr)
-		if prize_location != forbidden:
-			map0[prize_location] = char_prize
-			count_targets += 1
-	else:
-		map0[prize_location] = char_prize
+    #MainLoop
+    while True:
+        printerpack.showmap(mysnake, count_moves, mapdims, mapchars, textpack)
+        key = getkey()
 
-	#Print map
-	stg_fnct_pack_00.print_map0(map0, map_size, width, score, illegal)
+        isvalid = 0
+        if check_key(key, keyset) == 1:
+            isvalid = 1
+        #if key in keyset:
+        #    isvalid = 1
+        if key != keyset["0key_exit_game"]:
+            ismove = snakeclass.Snake.movehead(mysnake, key, keyset, mapdims)
+            if ismove == 0:
+                isvalid = 0
+        else:
+            break
+            #ExitKey was hit
 
-	#Remove old step-specified data from map
-	map0 = stg_fnct_pack_00.remove_old_data0(map0, map_size, char_head, char_tail, char_bcgr)
-	#Reset variables
-	illegal = 0
+        if isvalid == 1:
+            count_moves += 1
+            pos = snakeclass.Snake.readpos(mysnake)
+            snakeclass.Snake.appendtail(mysnake, pos)
 
-	#Input key
-	move = ord(getch())
-
-	#Check key
-	position0 = head_pos
-	#Vertical move
-	if move == 119:
-		head_pos -= width
-	elif move == 115:
-		head_pos += width
-	#Horisontal move
-	elif move == 97:
-		head_pos -= 1
-	elif move == 100:
-		head_pos += 1
-	#Leave game
-	elif move == 8: #Backspace
-		break
-	elif move == 3:	#CtrlC
-		break
-	#Keys that are not specified here
-	else:
-		notamove = 1
-
-	#Check if move is legal
-	#CASE: Player hits the wall
-	if map0[head_pos] == char_wall:
-		illegal = 1
-	#CASE: When player hits tail
-	elif map0[head_pos] == char_tail:
-		illegal = 1
-	#CASE: Prize is found
-	elif map0[head_pos] == char_prize:
-		count_targets -= 1
-		score += 1
-		if score % extension_rate == 0:
-			lenght += 1
-	#Applied to every illegal move
-	if illegal == 1:
-		head_pos = position0
-		notamove = 1
-
-	#----#----#----
-	#ENDOF GameLoop
-
-
-#----#----#----
-#Executed when leaving
-stg_fnct_pack_00.clear0()
-print("Score: ", score)
-
-
-#----#----#----
-#ENDOF Program
+    #EndofWhile
+#EndofDef
