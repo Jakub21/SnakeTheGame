@@ -1,0 +1,162 @@
+Snake, Game by JakubP
+Created in June 2017
+Settings and localisation file
+WordDelimitedFormat
+
+
+#Initialization/Snake
+!bgn *load
+	snake_len
+			3
+
+!end
+
+
+#Initialization/Map
+!bgn *load
+	custom_mapmode
+			0
+	step_time
+			0.15
+
+!end
+
+
+#Ingame/Steps
+!bgn *load
+	normal_sleep_time
+			0.334
+!end
+
+
+#Ingame/Map/Boundaries
+!bgn *load
+	map_xsize
+			12
+	map_ysize
+			12
+
+!end
+
+
+#Ingame/Map/Appearance
+!bgn *load
+	mapchar_empty
+			0
+	mapchar_wall
+			87
+	mapchar_head	#Default
+			72
+	mapchar_tail
+			83
+	mapchar_food
+			70
+	map_spacing_mode
+			spaces
+	map_spacing_amount
+			1
+
+!end
+
+
+#Ingame/Map/Indetifiers
+!bgn *load
+	mapsystem_empty
+			0
+	mapsystem_wall
+			1
+	mapsystem_head
+			2
+	mapsystem_tail
+			4
+	mapsystem_food
+			8
+
+
+!end
+
+
+#Menu/Options
+!bgn *load
+	mm_pos_play
+			1
+	mm_pos_reload_settings
+			2
+	mm_pos_exit
+			3
+
+!end
+
+
+#Menu/System
+!bgn *load
+	numof_menu_opts
+			3
+
+!end
+
+
+#Keys/Steering
+!bgn *load
+	key_move_up
+			119
+	key_move_down
+			115
+	key_move_left
+			97
+	key_move_right
+			100
+
+!end
+
+
+#Keys/Special
+!bgn *load
+	key_confirm
+			13
+
+!end
+
+
+
+#LOCALISATION
+
+#Menu
+!bgn *load
+	menu_header
+			< Snake, game by JakubP >
+	menu_opt1
+			Play!
+	menu_opt2
+			< Reload Settings >
+	menu_opt3
+			Exit
+!end
+
+
+#Notifications
+#Messages
+!bgn *load
+	settings_reload
+			< Reloading... >
+
+	ingame_header
+			< Snake by JakubP >
+	ingame_cantgo
+			< You cannot move here! >
+	ingame_score
+			Score:
+
+	atleave_header
+			< Snake, game by JakubP >
+	atleave_extend
+			< Created: June 2017 >
+!end
+
+#Errors
+!bgn *load
+	err_message_mode
+			< IOCONTROL:MESSAGE Has no argument MODE >
+	err_import
+			< Error occured, can't import required packages >
+!end

@@ -1,93 +1,40 @@
-#SnakeProject2, June2017
-#main.py
-
-#PublicLibraries
-import msvcrt
-#Private
-import snakeclass
-import printerpack
-
-def getkey():
-    return ord(msvcrt.getch())
-
-def check_key(key,keyset):
-    isvalid = 0
-    if key == keyset["0key_move_north"]:
-        isvalid = 1
-    if key == keyset["0key_move_south"]:
-        isvalid = 1
-    if key == keyset["0key_move_west"]:
-        isvalid = 1
-    if key == keyset["0key_move_east"]:
-        isvalid = 1
-    return isvalid
-
-
-
 def execute():
-    #Variables
-    mapheight = 12
-    mapwidth  = 24
-    mapsize = mapwidth * mapheight
-    count_moves = 0
+    #Static Settings
+    settings_file_name = "settings.wdf"
 
-    mapdims = (mapsize, mapwidth, mapheight)
-    #Keys used in game
-    keyset = {
-        "0key_move_north": ord("w"),
-        "0key_move_south": ord("s"),
-        "0key_move_west":  ord("a"),
-        "0key_move_east":  ord("d"),
-        "0key_exit_game":  ord("q"),
-    }
-    #Map charachers
-    mapchars = {
-        "0chr_bckg": " ",
-        "0chr_brdr": "#",
-        "0chr_head": "A",
-        "0chr_tail": "*",
-        #"":"",
-    }
-    #Localisation
-    textpack = {
-        #Ingame
-        "0text_title_0": " Snake by JakubP (2017)\n",
-        "0text_snake_x": "Snake X:\t",
-        "0text_snake_y": "Snake Y:\t",
-        "0text_snake_l": "Snake length:\t",
-        "0text_moves_c": "Num of moves:\t",
-        #"":"",
-        #Menu
-        #"":"",
-    }
+    #Modifiable Settings
+    try:
+        from wdf_test_package import wdf
+        settings = wdf.load(settings_file_name)
+    except:
+        print("\n", "Error: Couldnt load required file (WDF-Package)", "\n")
+        return
 
-    #Starting Snake
-    start_pos = mapsize//2
-    start_len = 3
-    mysnake = snakeclass.Snake(start_pos, start_len)
+    #Imports
+    try:
+        import msvcrt
+        import iocontrol
+        import menu
+        import time
+        import game
+    except:
+        print("\n", settings["err_import"], "\n")
+        return
 
-    #MainLoop
+
+    #Menu loop
+    returned = int
     while True:
-        printerpack.showmap(mysnake, count_moves, mapdims, mapchars, textpack)
-        key = getkey()
-
-        isvalid = 0
-        if check_key(key, keyset) == 1:
-            isvalid = 1
-        #if key in keyset:
-        #    isvalid = 1
-        if key != keyset["0key_exit_game"]:
-            ismove = snakeclass.Snake.movehead(mysnake, key, keyset, mapdims)
-            if ismove == 0:
-                isvalid = 0
-        else:
+        returned = menu.main(settings)
+        if returned == 0:
             break
-            #ExitKey was hit
-
-        if isvalid == 1:
-            count_moves += 1
-            pos = snakeclass.Snake.readpos(mysnake)
-            snakeclass.Snake.appendtail(mysnake, pos)
-
-    #EndofWhile
-#EndofDef
+        if returned == int(settings["mm_pos_play"]):
+            game.init(settings)
+        elif returned == int(settings["mm_pos_reload_settings"]):
+            print(settings["settings_reload"])
+            settings = wdf.load(settings_file_name)
+            time.sleep(float(settings["normal_sleep_time"]))
+        elif returned == int(settings["mm_pos_exit"]):
+            iocontrol.message(settings, "leave")
+            break
+    #
